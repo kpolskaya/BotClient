@@ -22,9 +22,11 @@ namespace BotClient
     {
         // Создать UI для бота из ДЗ 9
         // Предусмотреть возможность сохранения истории сообщений, присланных боту в JSON-файл 
+       TgMesClient client;
         public MainWindow()
         {
             InitializeComponent();
+            client = new TgMesClient(this);
         }
     }
 }

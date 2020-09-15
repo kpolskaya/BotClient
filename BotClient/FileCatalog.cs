@@ -8,7 +8,7 @@ namespace BotClient
 {
     class FileCatalog
     {
-        public string CatPath { get; set; }
+        public string CatPath { get; set; } //первая часть пути
         public List <MyFile> Files { get; set; }
         
         public FileCatalog (string CatPath, List<MyFile> Files)
@@ -24,12 +24,13 @@ namespace BotClient
             this.Files = new List<MyFile>();
         }
 
-        public void AddFile (string FileName,string FileType, long ChatID)
+        public void AddFile (string FullPath, string Type, long ChatID)
         {
             
-            MyFile f = new MyFile(FileName, FileType, ChatID);
+            MyFile f = new MyFile(FullPath, Type, ChatID);
             this.Files.Add(f);
         }
+       
     }
 }
 
