@@ -27,6 +27,7 @@ namespace BotClient
             string text = $"{DateTime.Now.ToLongTimeString()} | {e.Message.Chat.FirstName} | {e.Message.Chat.Id}: {e.Message.Text} | {e.Message.Type}";
             Console.WriteLine(text);
             string FullPath;
+            this.Catalog = new FileCatalog();
             switch (e.Message.Type.ToString())
             {
                 case "Text":        // обработка текстового запроса

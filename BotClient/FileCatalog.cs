@@ -18,7 +18,7 @@ namespace BotClient
 
         }
 
-        public FileCatalog ()
+        public FileCatalog()
         {
             this.CatPath = "";
             this.Files = new List<MyFile>();
