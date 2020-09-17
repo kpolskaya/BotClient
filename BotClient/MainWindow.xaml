@@ -5,8 +5,40 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BotClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title= "TelegramBotClient" Height="450" Width="800">
+   
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                   Height="auto">
+            <Menu DockPanel.Dock ="Left" Height="auto" >
+                <MenuItem Header="File" />
+                <MenuItem Header="More..." />
+            </Menu>
+        </DockPanel>
+        <StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="20">
+            
+        </StatusBar>
+        <Label Grid.Row="1" Grid.Column="0" Content="Список пользователей" 
+               Background="Black" Foreground="LightGray" 
+               FontWeight="DemiBold" FontSize="16" />
+        <ListBox Name="Contacts" Grid.Row="2" Grid.RowSpan="2" Grid.Column="0">
+            
+        </ListBox>
+        <ListBox Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
+            
+        </ListBox>
+        <Button Grid.Row="3" Grid.Column="1" Name="StartBot" Height="25" Content="Старт" FontSize="16" FontWeight="DemiBold" />
+
     </Grid>
 </Window>
