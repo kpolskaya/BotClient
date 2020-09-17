@@ -8,16 +8,20 @@ namespace BotClient
 {
     class MyFile
     {
-        public string FileName { get; set; }
-        public long ChatID { get; set; }
+        public string FilePath { get; set; }
         public string FileType { get; set; }
-
-        public MyFile(string FileName, string FileType, long ChatID)
+        //public string DTmes { get; set; }
+       // public string ChatFirstN { get; set; }
+        public long ChatId { get; set; }
+       
+        public MyFile(string FilePath, string FileType, long ChatId)
         {
-            this.FileName = FileName;
-            
+            this.FilePath = FilePath;
             this.FileType = FileType;
-            this.ChatID = ChatID;
+           // this.DTmes = DateTime.Now.ToLongTimeString();
+            //this.ChatFirstN = e.Message.Chat.FirstName;
+            this.ChatId = ChatId;
         }
+
     }
 }

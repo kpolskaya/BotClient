@@ -34,10 +34,12 @@ namespace BotClient
                     string messageText = e.Message.Text.ToLower();
                     ReplyOnText(messageText, e.Message.Chat.Id);
                     break;
+                case !"Text":
+                    ParseFilePath
 
                 case "Document":    // получение файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
                     FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
-                    DownLoad(e.Message.Document.FileId, FullPath,  e.Message.Type.ToString(), e.Message.Chat.Id);
+                    DownLoad(e.Message.Document.FileId, FullPath, e.Message.Type.ToString(), e.Message.Chat.Id);
                     await bot.SendTextMessageAsync(e.Message.Chat.Id,
                     $"Получен файл {e.Message.Document.FileName}, сохранен как {e.Message.Document.FileName}");
                     break;
@@ -58,7 +60,7 @@ namespace BotClient
                     break;
 
                 case "Video":   // получение видео файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
-                    FullPath= $@"{Catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
+                    FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
                     DownLoad(e.Message.Video.FileId, FullPath, e.Message.Type.ToString(), e.Message.Chat.Id);
                     await bot.SendTextMessageAsync(e.Message.Chat.Id,
                     $"Получен файл {e.Message.Document.FileName}, сохранен как {e.Message.Document.FileName}");
@@ -77,6 +79,13 @@ namespace BotClient
             //        DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString()));
             //});
         }
+
+        public string FullPath ParseFilePath ()
+            {
+
+            return (FullPath);
+}
+
         public TgMesClient(MainWindow W, string PathToken = @"C:\Users\kpols\Desktop\ДЗ\БОТ\token.txt")
         {
             this.BotMessageLog = new System.Collections.ObjectModel.ObservableCollection<MessageRec>();
@@ -103,6 +112,7 @@ namespace BotClient
                 fs.Close();
 
                 fs.Dispose();
+
                 Catalog.AddFile(path, type, chatId);
 
             }
