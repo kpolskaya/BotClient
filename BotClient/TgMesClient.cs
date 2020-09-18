@@ -27,98 +27,113 @@ namespace BotClient
             string text = $"{DateTime.Now.ToLongTimeString()} | {e.Message.Chat.FirstName} | {e.Message.Chat.Id}: {e.Message.Text} | {e.Message.Type}";
             Console.WriteLine(text);
             string FullPath;
+            MyFile f;
             this.Catalog = new FileCatalog();
-            switch (e.Message.Type.ToString())
+            if (!Directory.Exists(Catalog.CatPath))
             {
-                case "Text":        // обработка текстового запроса
-                    string messageText = e.Message.Text.ToLower();
-                    ReplyOnText(messageText, e.Message.Chat.Id);
-                    break;
-                case !"Text":
-                    ParseFilePath
-
-                case "Document":    // получение файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
-                    FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
-                    DownLoad(e.Message.Document.FileId, FullPath, e.Message.Type.ToString(), e.Message.Chat.Id);
-                    await bot.SendTextMessageAsync(e.Message.Chat.Id,
-                    $"Получен файл {e.Message.Document.FileName}, сохранен как {e.Message.Document.FileName}");
-                    break;
-
-                case "Photo":   // получение файла фотографии, сохранение в директории, установленной ранее, с уникальным идентификатором
-                    string namep = "photo" + Guid.NewGuid();
-                    FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{namep}";
-                    DownLoad(e.Message.Photo[e.Message.Photo.Length - 1].FileId, FullPath, e.Message.Type.ToString(), e.Message.Chat.Id);
-                    await bot.SendTextMessageAsync(e.Message.Chat.Id,
-                    $"Получен файл {@"C:\photo.jpg"}, сохранен как {namep}.jpg");
-                    break;
-                case "Audio": // получение аудио файла, сохранение в директории, установленной ранее, с уникальным идентификатором
-                    string namea = "audio" + Guid.NewGuid();
-                    FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{namea}";
-                    DownLoad(e.Message.Audio.FileId, FullPath, e.Message.Type.ToString(), e.Message.Chat.Id);
-                    await bot.SendTextMessageAsync(e.Message.Chat.Id,
-                    $"Получен файл {e.Message.Audio.Title}, сохранен как {namea}.mp3");
-                    break;
-
-                case "Video":   // получение видео файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
-                    FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
-                    DownLoad(e.Message.Video.FileId, FullPath, e.Message.Type.ToString(), e.Message.Chat.Id);
-                    await bot.SendTextMessageAsync(e.Message.Chat.Id,
-                    $"Получен файл {e.Message.Document.FileName}, сохранен как {e.Message.Document.FileName}");
-                    break;
-                default:
-                    await bot.SendTextMessageAsync(e.Message.Chat.Id,
-                   $"Файл неизвестного типа. Не знаю, что с ним делать.");
-                    break;
+                Directory.CreateDirectory(Catalog.CatPath);
             }
+            if (e.Message.Type.ToString() == "Text")
+            {
+                string messageText = e.Message.Text.ToLower();
+                ReplyOnText(messageText, e.Message.Chat.Id);
+            }
+            else
+            {
+                await bot.SendTextMessageAsync(e.Message.Chat.Id, "Спасибо за файл");
+                switch (e.Message.Type.ToString())
+
+                {
 
 
+                    case "Document":    // получение файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
+                        FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
+                        f = new MyFile(FullPath, e.Message.Document.FileId, e.Message.Type.ToString(), e.Message.Chat.Id);
+                        
+
+                        break;
+
+                    case "Photo":   // получение файла фотографии, сохранение в директории, установленной ранее, с уникальным идентификатором
+                        string namep = "photo" + Guid.NewGuid();
+                        FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{namep}";
+                        f = new MyFile(FullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), e.Message.Chat.Id);
+                        
+
+                        break;
+                    case "Audio": // получение аудио файла, сохранение в директории, установленной ранее, с уникальным идентификатором
+                        string namea = "audio" + Guid.NewGuid();
+                        FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{namea}";
+                        f = new MyFile(FullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), e.Message.Chat.Id);
+                        
+
+                        break;
+
+                    case "Video":   // получение видео файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
+                        FullPath = $@"{Catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
+                        f = new MyFile(FullPath, e.Message.Video.FileId, e.Message.Type.ToString(), e.Message.Chat.Id);
+                       
+
+                        break;
+                    default:
+                        f = new MyFile("", "", e.Message.Type.ToString(), e.Message.Chat.Id);
+                        await bot.SendTextMessageAsync(e.Message.Chat.Id, "Файл неизвестного типа. Не знаю, что с ним делать.");
+                        break;
+                }
+                DownLoad(f);
+                Catalog.AddFile(f);
+            }
+            
             //w.Dispatcher.Invoke(() =>
             //{
             //    BotMessageLog.Add(
             //    new MessageRec(
             //        DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString()));
             //});
+            
+
+       
         }
 
-        public string FullPath ParseFilePath ()
+            public TgMesClient(MainWindow W, string PathToken = @"C:\Users\kpols\Desktop\ДЗ\БОТ\token.txt")
             {
+                this.BotMessageLog = new System.Collections.ObjectModel.ObservableCollection<MessageRec>();
+                this.w = W;
 
-            return (FullPath);
-}
+                bot = new TelegramBotClient(File.ReadAllText(PathToken));
 
-        public TgMesClient(MainWindow W, string PathToken = @"C:\Users\kpols\Desktop\ДЗ\БОТ\token.txt")
-        {
-            this.BotMessageLog = new System.Collections.ObjectModel.ObservableCollection<MessageRec>();
-            this.w = W;
+                bot.OnMessage += MessageListener;
 
-            bot = new TelegramBotClient(File.ReadAllText(PathToken));
-
-            bot.OnMessage += MessageListener;
-
-            bot.StartReceiving();
-        }
-             /// <summary>
+                bot.StartReceiving();
+            }
+        /// <summary>
         /// Загружает файл из телеграмм чата
         /// </summary>
         /// <param name="fileId">ID файла</param>
         /// <param name="path">путь для сохранения на компьютере</param>
-        public async void DownLoad(string fileId, string path, string type, long chatId)
+        public async void DownLoad(MyFile f)
         {
+            //bool ans = true;
             try
             {
-                var file = await bot.GetFileAsync(fileId);
-                FileStream fs = new FileStream(path, FileMode.Create);
+                if (!Directory.Exists($@"{Catalog.CatPath}\{f.FileType}"))
+                {
+                    Directory.CreateDirectory($@"{Catalog.CatPath}\{f.FileType}");
+                }
+                var file = await bot.GetFileAsync(f.FileId);
+                FileStream fs = new FileStream(f.FilePath, FileMode.Create);
                 await bot.DownloadFileAsync(file.FilePath, fs);
                 fs.Close();
 
                 fs.Dispose();
+                f.IsDownloaded = true;
 
-                Catalog.AddFile(path, type, chatId);
+               // Catalog.AddFile(path, type, chatId);
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ошибка загрузки файла: " + ex.Message);
+                Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);////????
+                //ans = false;
             }
         }
 

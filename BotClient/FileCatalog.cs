@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,17 +22,15 @@ namespace BotClient
 
         public FileCatalog()
         {
-            this.CatPath = "";
+            this.CatPath = Directory.GetCurrentDirectory();
             this.Files = new List<MyFile>();
         }
 
        
-        public void AddFile (string FullPath, string Type, long ChatID)
+        public void AddFile (MyFile f)
         {
             
-            MyFile f = new MyFile(FullPath,Type,ChatID);
-            Debug.WriteLine($"{FullPath }{Type}{ChatID}");
-            this.Files.Add(f);
+          this.Files.Add(f);
         }
        
     }
