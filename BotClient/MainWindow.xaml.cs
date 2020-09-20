@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,8 @@ namespace BotClient
         {
             InitializeComponent();
             client = new TgMesClient(this);
+            //ObservableCollection<MyFile> files = new ObservableCollection<MyFile>();
+            listViewF.ItemsSource = client.Catalog.Files;
         }
     }
 }

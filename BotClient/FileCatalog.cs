@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace BotClient
     class FileCatalog
     {
         public string CatPath { get; set; } //первая часть пути
-        public List <MyFile> Files { get; set; }
+        public ObservableCollection<MyFile> Files { get; set; }
         
-        public FileCatalog (string CatPath, List<MyFile> Files)
+        public FileCatalog (string CatPath, ObservableCollection<MyFile> Files)
         {
             this.CatPath = CatPath;
             this.Files = Files; 
@@ -23,7 +24,7 @@ namespace BotClient
         public FileCatalog()
         {
             this.CatPath = Directory.GetCurrentDirectory();
-            this.Files = new List<MyFile>();
+            this.Files = new ObservableCollection<MyFile>();
         }
 
        
