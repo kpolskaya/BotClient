@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +31,14 @@ namespace BotClient
             InitializeComponent();
             client = new TgMesClient(this);
             //ObservableCollection<MyFile> files = new ObservableCollection<MyFile>();
-            listViewF.ItemsSource = client.Catalog.Files;
+            listViewF.ItemsSource = client.catalog.Files;
+            Messages.ItemsSource = client.botMessageLog.Messages;
+        }
+
+        private void DataWindow_Closing(object sender, CancelEventArgs e)
+        {
+            client.botMessageLog.Save($@"{Directory.GetCurrentDirectory()}\messagelog.json");
+            Application.Current.Shutdown();
         }
     }
 }

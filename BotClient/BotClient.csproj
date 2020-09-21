@@ -65,7 +65,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BotContact.cs" />
+    <Compile Include="ContactList.cs" />
     <Compile Include="FileCatalog.cs" />
+    <Compile Include="MessageHistory.cs" />
     <Compile Include="MessageRec.cs" />
     <Compile Include="MyFile.cs" />
     <Compile Include="TgMesClient.cs" />
