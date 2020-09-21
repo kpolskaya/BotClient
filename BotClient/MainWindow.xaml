@@ -58,10 +58,11 @@
 
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Дата" Width="130" />
-                        <GridViewColumn Header="Тип файла" Width="130" DisplayMemberBinding="{Binding Path = FileType}"/>
-                        <GridViewColumn Header="Путь к файлу" Width="430" DisplayMemberBinding="{Binding Path = FilePath}"/>
-                        
+                        <GridViewColumn Header="Дата" Width="120" DisplayMemberBinding="{Binding Path = DTmes}"/>
+                        <GridViewColumn Header="Тип файла" Width="80" DisplayMemberBinding="{Binding Path = FileType}"/>
+                        <GridViewColumn Header="Путь к файлу" Width="410" DisplayMemberBinding="{Binding Path = FilePath}"/>
+                        <GridViewColumn Header="Отправитель" Width="80" DisplayMemberBinding="{Binding Path = ChatFirstN}"/>
+                        <GridViewColumn Header="Записан" Width="70" DisplayMemberBinding="{Binding Path = IsDownloaded}"/>
 
                         <!--<GridViewColumn Header="Дата" Width="130">
                             <GridViewColumn.CellTemplate>
