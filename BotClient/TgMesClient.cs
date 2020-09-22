@@ -221,7 +221,12 @@ namespace BotClient
             }
         }
 
-        public MyFile ReplyOnFile(MessageEventArgs e)
+       /// <summary>
+       /// Принимает файл от пользователя, определяет путь для сохранения файла
+       /// </summary>
+       /// <param name="e"></param>
+       /// <returns></returns>
+       public MyFile ReplyOnFile(MessageEventArgs e)
         {
             string FullPath;
             bot.SendTextMessageAsync(e.Message.Chat.Id, "Спасибо за файл");
