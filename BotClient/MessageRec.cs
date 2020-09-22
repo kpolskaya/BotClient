@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BotClient
 {
-    class MessageRec
+    struct MessageRec
     {
         public string Time { get; set; }
         public long Id { get; set; }
@@ -28,6 +28,7 @@ namespace BotClient
             this.Id = Id;
             this.FirstName = FirstName;
             this.Type = Type;
+            this.Text = "";
 
         }
     }
