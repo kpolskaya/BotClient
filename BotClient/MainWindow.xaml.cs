@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -40,5 +41,15 @@ namespace BotClient
             client.botMessageLog.Save($@"{Directory.GetCurrentDirectory()}\messagelog.json");
             Application.Current.Shutdown();
         }
+
+        private void Button_Click1(object sender, RoutedEventArgs e)
+        {
+            client.catalog.Save(($@"{Directory.GetCurrentDirectory()}\catalog.json"));
+        }
+
+        //private void Button_Click2(object sender, RoutedEventArgs e)
+        //{
+        //    client.catalog.DownloadCat(($@"{Directory.GetCurrentDirectory()}\catalog.json"));
+        //}
     }
 }

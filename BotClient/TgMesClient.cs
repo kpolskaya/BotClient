@@ -51,7 +51,7 @@ namespace BotClient
                 {
                     ReplyOnFile(e);
                     DownLoad(f);
-                    catalog.AddFile(f);
+                    catalog.Add(f);
 
                 }
 
@@ -76,7 +76,12 @@ namespace BotClient
             else
                 this.botMessageLog = new MessageHistory();
 
-            this.catalog = new FileCatalog();
+            if (File.Exists($@"{Directory.GetCurrentDirectory()}\catalog.json"))
+                this.catalog = new FileCatalog($@"{Directory.GetCurrentDirectory()}\catalog.json");
+            
+            else 
+               this.catalog = new FileCatalog();
+
             this.w = W;
             
 
@@ -94,7 +99,6 @@ namespace BotClient
         /// <param name="path">путь для сохранения на компьютере</param>
         public async void DownLoad(MyFile f)
         {
-            //bool ans = true;
             try
             {
                 if (!Directory.Exists($@"{catalog.CatPath}\{f.FileType}"))
@@ -103,19 +107,20 @@ namespace BotClient
                 }
                 var file = await bot.GetFileAsync(f.FileId);
                 FileStream fs = new FileStream(f.FilePath, FileMode.Create);
+             
                 await bot.DownloadFileAsync(file.FilePath, fs);
+               
                 fs.Close();
 
                 fs.Dispose();
-                f.IsDownloaded = true;                          //!!! был глюк с гифом - не проставилась отметка о записи - проверить!
+                catalog.Files[catalog.Files.Count-1].IsDownloaded = true;                        //!!! был глюк с гифом - не проставилась отметка о записи - проверить!
 
-               // Catalog.AddFile(path, type, chatId);
+                // Catalog.AddFile(path, type, chatId);
 
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);////????
-                //ans = false;
             }
         }
 
@@ -238,10 +243,10 @@ namespace BotClient
         }
 
        /// <summary>
-       /// Принимает файл от пользователя, определяет путь для сохранения файла
+       /// Принимает файл от пользователя, определяет путь для сохранения файла, формирует строку каталога
        /// </summary>
-       /// <param name="e"></param>
-       /// <returns></returns>
+       /// <param name="e">сообщение от бота</param>
+       /// <returns>строка каталога файлов</returns>
        public MyFile ReplyOnFile(MessageEventArgs e)
         {
             string FullPath;

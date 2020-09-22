@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -13,11 +14,11 @@ namespace BotClient
     {
         public string CatPath { get; set; } //первая часть пути
         public ObservableCollection<MyFile> Files { get; set; }
-        
-        public FileCatalog (string CatPath, ObservableCollection<MyFile> Files)
+
+        public FileCatalog(string CatPath, ObservableCollection<MyFile> Files)
         {
             this.CatPath = CatPath;
-            this.Files = Files; 
+            this.Files = Files;
 
         }
 
@@ -27,13 +28,31 @@ namespace BotClient
             this.Files = new ObservableCollection<MyFile>();
         }
 
-       
-        public void AddFile (MyFile f)
+        public FileCatalog(string path)
         {
-            
-          this.Files.Add(f);
+            this.CatPath = Directory.GetCurrentDirectory();
+            string json;
+            using (StreamReader fs = new StreamReader(path))
+                json = fs.ReadToEnd();
+            Files = JsonConvert.DeserializeObject<ObservableCollection<MyFile>>(json);
+
+
         }
-       
+
+
+        public void Add(MyFile f)
+        {
+            this.Files.Add(f);
+        }
+        public void Save(string path)
+        {
+            string json = JsonConvert.SerializeObject(Files);
+            using (StreamWriter fs = new StreamWriter(path, false))
+                fs.WriteAsync(json);
+
+        }
+
+      
     }
 }
 
