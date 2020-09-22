@@ -20,6 +20,7 @@ namespace BotClient
         private string token; 
         private MainWindow w;
         private string historyPath = $@"{Directory.GetCurrentDirectory()}\messagelog.json"; //! hard-coded
+        private string contactPath = $@"{Directory.GetCurrentDirectory()}\contacts.json"; //! hard-coded
 
         private TelegramBotClient bot;
         //public ObservableCollection<MessageRec> BotMessageLog { get; set; }
@@ -27,6 +28,9 @@ namespace BotClient
         MessageRec message;
         public FileCatalog catalog { get; set; }
         MyFile f;
+        public ContactList botContactList { get; set; }
+        BotContact botContact;
+
         public void MessageListener(object sender, Telegram.Bot.Args.MessageEventArgs e)
         {
             string text = $"{DateTime.Now.ToLongTimeString()} | {e.Message.Chat.FirstName} | {e.Message.Chat.Id}: {e.Message.Text} | {e.Message.Type}";
@@ -36,7 +40,13 @@ namespace BotClient
            w.Dispatcher.Invoke(() =>
             {
                
-               
+                message = new MessageRec(DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString());
+                botMessageLog.Add(message);
+
+                botContact = new BotContact(e.Message.Chat.FirstName, e.Message.Chat.Id);
+
+                if (!botContactList.Contains(botContact))
+                    botContactList.Add(botContact);
 
                 if (!Directory.Exists(catalog.CatPath))
                 {
@@ -51,7 +61,7 @@ namespace BotClient
                 {
                     ReplyOnFile(e);
                     DownLoad(f);
-                    catalog.Add(f);
+                   
 
                 }
 
@@ -59,8 +69,7 @@ namespace BotClient
                 //    new MessageRec(
                 //        DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString()));
 
-                message = new MessageRec(DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString());
-                botMessageLog.Add(message);
+               
             });
 
 
@@ -76,6 +85,11 @@ namespace BotClient
             else
                 this.botMessageLog = new MessageHistory();
 
+            if (File.Exists(contactPath))
+                this.botContactList = new ContactList(contactPath);
+            else
+                this.botContactList = new ContactList();
+
             if (File.Exists($@"{Directory.GetCurrentDirectory()}\catalog.json"))
                 this.catalog = new FileCatalog($@"{Directory.GetCurrentDirectory()}\catalog.json");
             
@@ -90,7 +104,8 @@ namespace BotClient
 
             bot.OnMessage += MessageListener;
 
-            bot.StartReceiving();
+            //bot.StartReceiving();
+           
         }
         /// <summary>
         /// Загружает файл из телеграмм чата
@@ -113,7 +128,8 @@ namespace BotClient
                 fs.Close();
 
                 fs.Dispose();
-                catalog.Files[catalog.Files.Count-1].IsDownloaded = true;                        //!!! был глюк с гифом - не проставилась отметка о записи - проверить!
+                f.IsDownloaded = true;
+                //catalog.Files[catalog.Files.Count-1].IsDownloaded = true;                        //!!! был глюк с гифом - не проставилась отметка о записи - проверить!
 
                 // Catalog.AddFile(path, type, chatId);
 
@@ -121,6 +137,12 @@ namespace BotClient
             catch (Exception ex)
             {
                 Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);////????
+                
+            }
+            finally
+            {
+                catalog.Add(f);
+
             }
         }
 
@@ -279,6 +301,11 @@ namespace BotClient
                     break;
             }
             return f;
+        }
+
+        public void BotStart()
+        {
+            bot.StartReceiving();
         }
         
     }

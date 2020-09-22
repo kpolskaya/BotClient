@@ -39,7 +39,13 @@
                        Background="Black" Foreground="LightGray" 
                        FontWeight="DemiBold" FontSize="16" />
                 <ListBox Name="Contacts" Grid.Row="2" Grid.RowSpan="2" Grid.Column="0">
-            
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0">
+                                <TextBlock Text="{Binding FirstName}" Margin="2" FontSize="14" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
                 <ListBox Name="Messages" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
                     <ListBox.ItemTemplate>
@@ -55,7 +61,13 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <Button Grid.Row="3" Grid.Column="1" Name="StartBot" Height="25" Content="Старт" FontSize="16" FontWeight="DemiBold" ToolTipService.ToolTip="Кликните для запуска бота"/>
+                <Button Grid.Row="3" Grid.Column="1" 
+                        Name="StartBot" 
+                        Height="25" Content="Старт" 
+                        FontSize="16" 
+                        FontWeight="DemiBold" 
+                        ToolTipService.ToolTip="Кликните для запуска бота"
+                        Click="StartBot_Click"/>
 
             </Grid>
         </TabItem>

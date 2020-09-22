@@ -31,14 +31,18 @@ namespace BotClient
         {
             InitializeComponent();
             client = new TgMesClient(this);
+            client.BotStart();
+
             //ObservableCollection<MyFile> files = new ObservableCollection<MyFile>();
             listViewF.ItemsSource = client.catalog.Files;
             Messages.ItemsSource = client.botMessageLog.Messages;
+            Contacts.ItemsSource = client.botContactList.Contacts;
         }
 
         private void DataWindow_Closing(object sender, CancelEventArgs e)
         {
             client.botMessageLog.Save($@"{Directory.GetCurrentDirectory()}\messagelog.json");
+            client.botContactList.Save($@"{Directory.GetCurrentDirectory()}\contacts.json");
             Application.Current.Shutdown();
         }
 
@@ -46,6 +50,13 @@ namespace BotClient
         {
             client.catalog.Save(($@"{Directory.GetCurrentDirectory()}\catalog.json"));
         }
+
+        private void StartBot_Click(object sender, RoutedEventArgs e)
+        {
+            //client.BotStart();
+        }
+
+
 
         //private void Button_Click2(object sender, RoutedEventArgs e)
         //{

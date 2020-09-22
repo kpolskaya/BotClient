@@ -43,7 +43,7 @@ namespace BotClient
         {
             string jsonFile = JsonConvert.SerializeObject(this.Messages);
             using (StreamWriter fs = new StreamWriter(path, false))
-                fs.WriteAsync(jsonFile);
+                fs.Write(jsonFile);
 
         }
 

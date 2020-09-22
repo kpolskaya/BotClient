@@ -10,10 +10,14 @@ using System.Threading.Tasks;
 
 namespace BotClient
 {
-    struct ContactList //структура или класс?
+    class ContactList //структура или класс?
     {
         public ObservableCollection<BotContact> Contacts { get; set; } // геттер нужно убрать
 
+        public ContactList()
+        {
+            this.Contacts = new ObservableCollection<BotContact>();
+        }
         public ContactList(string path)
         {
             string jsonString;
@@ -27,16 +31,19 @@ namespace BotClient
             this.Contacts.Add(contact);
         }
 
-        public bool Exists(BotContact contact)
+        public bool Contains(BotContact contact)
         {
-            return (this.Contacts.Contains(contact));
+            //if (this.Contacts == null || !this.Contacts.Contains(contact))
+            //    return false;
+            //return true;
+            return this.Contacts.Contains(contact);
         }
 
         public void Save(string path)
         {
             string jsonFile = JsonConvert.SerializeObject(this.Contacts);
             using (StreamWriter fs = new StreamWriter(path, false))
-                fs.WriteAsync(jsonFile);
+                fs.Write(jsonFile);
 
         }
     }
