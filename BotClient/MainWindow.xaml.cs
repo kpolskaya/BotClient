@@ -31,7 +31,7 @@ namespace BotClient
         {
             InitializeComponent();
             client = new TgMesClient(this);
-            client.BotStart();
+            //client.BotStart();
 
             //ObservableCollection<MyFile> files = new ObservableCollection<MyFile>();
             listViewF.ItemsSource = client.catalog.Files;

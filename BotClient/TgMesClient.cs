@@ -104,7 +104,7 @@ namespace BotClient
 
             bot.OnMessage += MessageListener;
 
-            //bot.StartReceiving();
+            bot.StartReceiving();
            
         }
         /// <summary>
