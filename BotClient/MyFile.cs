@@ -24,7 +24,7 @@ namespace BotClient
             this.FilePath = FilePath;
             this.FileId = FileId;
             this.FileType = FileType;
-            this.DTmes = DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss");
+            this.DTmes = DTmes;
             this.ChatFirstN = ChatFirstN;
             this.ChatId = ChatId;
             this.IsDownloaded = false;

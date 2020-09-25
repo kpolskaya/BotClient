@@ -26,7 +26,10 @@ namespace BotClient
     {
         // Создать UI для бота из ДЗ 9
         // Предусмотреть возможность сохранения истории сообщений, присланных боту в JSON-файл 
-       TgMesClient client;
+        
+        
+        TgMesClient client;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -34,22 +37,20 @@ namespace BotClient
             //client.BotStart();
 
             //ObservableCollection<MyFile> files = new ObservableCollection<MyFile>();
-            listViewF.ItemsSource = client.catalog.Files;
-            Messages.ItemsSource = client.botMessageLog.Messages;
-            Contacts.ItemsSource = client.botContactList.Contacts;
+            listViewF.ItemsSource = client.Catalog.Files;
+            Messages.ItemsSource = client.BotMessageLog.Messages;
+            Contacts.ItemsSource = client.BotContactList.Contacts;
         }
 
         private void DataWindow_Closing(object sender, CancelEventArgs e)
         {
-            client.botMessageLog.Save($@"{Directory.GetCurrentDirectory()}\messagelog.json");
-            client.botContactList.Save($@"{Directory.GetCurrentDirectory()}\contacts.json");
+            client.BotMessageLog.Save(client.HistoryPath);
+            client.BotContactList.Save(client.ContactPath);
+            client.Catalog.Save(client.CatalogPath);
             Application.Current.Shutdown();
         }
 
-        private void Button_Click1(object sender, RoutedEventArgs e)
-        {
-            client.catalog.Save(($@"{Directory.GetCurrentDirectory()}\catalog.json"));
-        }
+        
 
         private void StartBot_Click(object sender, RoutedEventArgs e)
         {

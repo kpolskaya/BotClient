@@ -17,40 +17,107 @@ namespace BotClient
 {
     class TgMesClient
     {
+        #region Поля
+
         private string token; 
         private MainWindow w;
-        private string historyPath = $@"{Directory.GetCurrentDirectory()}\messagelog.json"; //! hard-coded
-        private string contactPath = $@"{Directory.GetCurrentDirectory()}\contacts.json"; //! hard-coded
-
         private TelegramBotClient bot;
-        //public ObservableCollection<MessageRec> BotMessageLog { get; set; }
-        public MessageHistory botMessageLog { get; set; }
-        MessageRec message;
-        public FileCatalog catalog { get; set; }
-        MyFile f;
-        public ContactList botContactList { get; set; }
-        BotContact botContact;
+        //текущий файл, переданный пользователем
+        private MyFile f;
+        //текущее сообщение в чате
+        private MessageRec message;
+        //текущий контакт
+        private BotContact botContact;
+        #endregion 
 
+        #region Автосвойства
+        /// <summary>
+        /// Путь к файлу с историей сообщений
+        /// </summary>
+        public string HistoryPath { get { return $@"{Directory.GetCurrentDirectory()}\messagelog.json"; } } 
+
+        /// <summary>
+        /// Путь к файлу списка контактов
+        /// </summary>
+        public string ContactPath { get { return $@"{Directory.GetCurrentDirectory()}\contacts.json"; } } 
+
+        /// <summary>
+        /// Путь к файлу каталога полученных файлов
+        /// </summary>
+        public string CatalogPath { get { return $@"{Directory.GetCurrentDirectory()}\catalog.json"; } }
+
+        /// <summary>
+        /// Лог сообщений
+        /// </summary>
+        public MessageHistory BotMessageLog { get; set; }
+        
+        /// <summary>
+        /// Каталог присланных файлов
+        /// </summary>
+        public FileCatalog Catalog { get; set; }
+        
+        /// <summary>
+        /// Список контактов бота
+        /// </summary>
+        public ContactList BotContactList { get; set; }
+        #endregion
+
+        /// <summary>
+        /// Конструктор клиента
+        /// </summary>
+        /// <param name="W">вызывающее окно</param>
+        public TgMesClient(MainWindow W)
+        {
+            this.token = File.ReadAllText(@"token.txt");
+
+            if (File.Exists(HistoryPath))
+                this.BotMessageLog = new MessageHistory(HistoryPath);
+            else
+                this.BotMessageLog = new MessageHistory();
+
+            if (File.Exists(ContactPath))
+                this.BotContactList = new ContactList(ContactPath);
+            else
+                this.BotContactList = new ContactList();
+
+            if (File.Exists(CatalogPath))
+                this.Catalog = new FileCatalog(CatalogPath);
+
+            else
+                this.Catalog = new FileCatalog();
+
+            this.w = W;
+
+            bot = new TelegramBotClient(this.token);
+
+            bot.OnMessage += MessageListener;
+
+            bot.StartReceiving();
+
+        }
+
+        /// <summary>
+        /// Получает сообщения в фоновом режиме
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void MessageListener(object sender, Telegram.Bot.Args.MessageEventArgs e)
         {
-            string text = $"{DateTime.Now.ToLongTimeString()} | {e.Message.Chat.FirstName} | {e.Message.Chat.Id}: {e.Message.Text} | {e.Message.Type}";
-            Debug.WriteLine(text);
             
-
-           w.Dispatcher.Invoke(() =>
+           this.w.Dispatcher.Invoke(() =>
             {
                
                 message = new MessageRec(DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString());
-                botMessageLog.Add(message);
+                BotMessageLog.Add(message);
 
                 botContact = new BotContact(e.Message.Chat.FirstName, e.Message.Chat.Id);
 
-                if (!botContactList.Contains(botContact))
-                    botContactList.Add(botContact);
+                if (!BotContactList.Contains(botContact))
+                    BotContactList.Add(botContact);
 
-                if (!Directory.Exists(catalog.CatPath))
+                if (!Directory.Exists(Catalog.PathToUserFiles))
                 {
-                    Directory.CreateDirectory(catalog.CatPath);
+                    Directory.CreateDirectory(Catalog.PathToUserFiles);
                 }
                 if (e.Message.Type.ToString() == "Text")
                 {
@@ -59,66 +126,28 @@ namespace BotClient
                 }
                 else
                 {
-                    ReplyOnFile(e);
+                    IdentifyFile(e);
                     DownLoad(f);
                    
 
                 }
 
-                //    BotMessageLog.Add(
-                //    new MessageRec(
-                //        DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString()));
-
-               
             });
 
-
-
         }
 
-        public TgMesClient(MainWindow W)
-        {
-            this.token = File.ReadAllText(@"token.txt");
-
-            if (File.Exists(historyPath))
-                this.botMessageLog = new MessageHistory(historyPath);
-            else
-                this.botMessageLog = new MessageHistory();
-
-            if (File.Exists(contactPath))
-                this.botContactList = new ContactList(contactPath);
-            else
-                this.botContactList = new ContactList();
-
-            if (File.Exists($@"{Directory.GetCurrentDirectory()}\catalog.json"))
-                this.catalog = new FileCatalog($@"{Directory.GetCurrentDirectory()}\catalog.json");
-            
-            else 
-               this.catalog = new FileCatalog();
-
-            this.w = W;
-            
-
-            //bot = new TelegramBotClient(File.ReadAllText(PathToken));
-            bot = new TelegramBotClient(this.token);
-
-            bot.OnMessage += MessageListener;
-
-            bot.StartReceiving();
-           
-        }
+        
         /// <summary>
         /// Загружает файл из телеграмм чата
         /// </summary>
-        /// <param name="fileId">ID файла</param>
-        /// <param name="path">путь для сохранения на компьютере</param>
+        /// <param name="f">атрибуты полученного файла</param>
         public async void DownLoad(MyFile f)
         {
             try
             {
-                if (!Directory.Exists($@"{catalog.CatPath}\{f.FileType}"))
+                if (!Directory.Exists($@"{Catalog.PathToUserFiles}\{f.FileType}"))
                 {
-                    Directory.CreateDirectory($@"{catalog.CatPath}\{f.FileType}");
+                    Directory.CreateDirectory($@"{Catalog.PathToUserFiles}\{f.FileType}");
                 }
                 var file = await bot.GetFileAsync(f.FileId);
                 FileStream fs = new FileStream(f.FilePath, FileMode.Create);
@@ -128,20 +157,17 @@ namespace BotClient
                 fs.Close();
 
                 fs.Dispose();
-                f.IsDownloaded = true;
-                //catalog.Files[catalog.Files.Count-1].IsDownloaded = true;                        //!!! был глюк с гифом - не проставилась отметка о записи - проверить!
-
-                // Catalog.AddFile(path, type, chatId);
-
+                f.IsDownloaded = true; // отметка о том, что файл был успешно загружен
+               
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);////????
+                Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);  //переделать вывод в статусбар
                 
             }
             finally
             {
-                catalog.Add(f);
+                Catalog.Add(f);
 
             }
         }
@@ -150,7 +176,7 @@ namespace BotClient
         /// Обрабатывает текстовый запрос пользователя и отвечает на него в чат
         /// </summary>
         /// <param name="text">текст запроса</param>
-        /// <param name="chatID">ID чата</param>
+        /// <param name="chatID">ID пользователя</param>
         public async void ReplyOnText(string text, long chatID)
         {
             string botReply;
@@ -160,7 +186,7 @@ namespace BotClient
                 case "/ковид":  //обработка запроса на информацию по Covid19: отправка фото и данных с covid19api.com в телеграмм чат
                                 //запрос через RapidAPI агрегатор, бесплатный режим с ограничениями по количеству запросов
                     SendPhoto("coronavirus-5018466_640.jpg", chatID);
-                    Console.WriteLine($"{DateTime.Now.ToLongTimeString()} | Bot | {chatID}: coronavirus-5018466_640.jpg | Photo");
+                    //Console.WriteLine($"{DateTime.Now.ToLongTimeString()} | Bot | {chatID}: coronavirus-5018466_640.jpg | Photo");
                     //try
                     //{
                     //    var client = new RestClient("https://covid-19-data.p.rapidapi.com/totals?format=json");
@@ -265,47 +291,42 @@ namespace BotClient
         }
 
        /// <summary>
-       /// Принимает файл от пользователя, определяет путь для сохранения файла, формирует строку каталога
+       /// Обрабатывает информацию об отправленном пользователем файле
        /// </summary>
        /// <param name="e">сообщение от бота</param>
-       /// <returns>строка каталога файлов</returns>
-       public MyFile ReplyOnFile(MessageEventArgs e)
+       /// <returns>Атрибуты полученного файла для записи в каталог</returns>
+       public MyFile IdentifyFile(MessageEventArgs e)
         {
             string FullPath;
             bot.SendTextMessageAsync(e.Message.Chat.Id, "Спасибо за файл");
             switch (e.Message.Type.ToString())
             {
-                case "Document":    // получение файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
-                    FullPath = $@"{catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
-                    f = new MyFile(FullPath, e.Message.Document.FileId, e.Message.Type.ToString(), DateTime.Now.ToLongTimeString(),e.Message.Chat.FirstName, e.Message.Chat.Id);
+                case "Document":    // формирование пути для сохранения файла с именем, полученным от пользователя
+                    FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{e.Message.Document.FileName}";
+                    f = new MyFile(FullPath, e.Message.Document.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
 
-                case "Photo":   // получение файла фотографии, сохранение в директории, установленной ранее, с уникальным идентификатором
+                case "Photo":   // формирование пути для сохранения фотографии с уникальным именем
                     string namep = "photo" + Guid.NewGuid();
-                    FullPath = $@"{catalog.CatPath}\{e.Message.Type}\{namep}";
-                    f = new MyFile(FullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), DateTime.Now.ToLongTimeString(), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{namep}";
+                    f = new MyFile(FullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
-                case "Audio": // получение аудио файла, сохранение в директории, установленной ранее, с уникальным идентификатором
+                case "Audio": // формирование пути для сохранения аудиофайла с уникальным именем
                     string namea = "audio" + Guid.NewGuid();
-                    FullPath = $@"{catalog.CatPath}\{e.Message.Type}\{namea}";
-                    f = new MyFile(FullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), DateTime.Now.ToLongTimeString(), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{namea}";
+                    f = new MyFile(FullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
 
-                case "Video":   // получение видео файла, сохранение в директории, установленной ранее, с именем, полученным от пользователя
-                    FullPath = $@"{catalog.CatPath}\{e.Message.Type}\{e.Message.Document.FileName}";
-                    f = new MyFile(FullPath, e.Message.Video.FileId, e.Message.Type.ToString(), DateTime.Now.ToLongTimeString(), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                case "Video":   // формирование пути для сохранения файла с именем, полученным от пользователя
+                    FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{e.Message.Document.FileName}";
+                    f = new MyFile(FullPath, e.Message.Video.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
                 default:
-                    f = new MyFile("", "", e.Message.Type.ToString(), DateTime.Now.ToLongTimeString(), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    f = new MyFile("", "", e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     bot.SendTextMessageAsync(e.Message.Chat.Id, "Файл неизвестного типа. Не знаю, что с ним делать.");
                     break;
             }
             return f;
-        }
-
-        public void BotStart()
-        {
-            bot.StartReceiving();
         }
         
     }
