@@ -8,7 +8,7 @@
         Closing="DataWindow_Closing"
         
         
-        Title= "TelegramBotClient" Height="450" Width="800">
+        Title= "TelegramBotClient" Height="500" Width="900">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -55,7 +55,7 @@
 
                     </StatusBar>-->
                     <Label Grid.Row="1" Grid.Column="0" Content="Список пользователей" 
-                            Background="Black" Foreground="LightGray" 
+                            Background="DarkGray" Foreground="Black" 
                             FontWeight="DemiBold" FontSize="16" />
                     <ListBox Name="Contacts" Grid.Row="2" Grid.RowSpan="2" Grid.Column="0">
                         <ListBox.ItemTemplate>
@@ -69,24 +69,24 @@
                     <ListBox Name="Messages" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="Blue" Margin="2" BorderThickness="1" CornerRadius="5">
+                                <Border BorderBrush="DarkGray" Margin="2" BorderThickness="1" CornerRadius="5">
                                     <WrapPanel Margin="10">
                                         <TextBlock Text="{Binding FirstName}" Margin="3" FontSize="14"/>
                                         <TextBlock Text="{Binding StringFormat=sent {0}, Path=Type}" Margin="3" FontSize="14"/>
-                                        <TextBlock Text="{Binding Text}" Margin="3" FontSize="14" FontWeight="DemiBold" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Text}" Margin="3" FontSize="14" FontWeight="DemiBold" TextWrapping="Wrap" MaxWidth="600"/>
                                         <TextBlock Text="{Binding Time}" Margin="3" FontSize="14" Foreground="Gray"/>
                                     </WrapPanel>
                                 </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Button Grid.Row="3" Grid.Column="1" 
+                    <!--<Button Grid.Row="3" Grid.Column="1" 
                             Name="StartBot" 
                             Height="25" Content="Старт" 
                             FontSize="16" 
                             FontWeight="DemiBold" 
                             ToolTipService.ToolTip="Кликните для запуска бота"
-                            Click="StartBot_Click"/>
+                            Click="StartBot_Click"/>-->
 
                 </Grid>
             </TabItem>
@@ -168,7 +168,7 @@
         </TabControl>
  
         <StatusBar Height="23" DockPanel.Dock="Bottom" Grid.Row="2">
-            <TextBlock x:Name="StatusInfo" Margin="0"/>
+            <TextBlock x:Name="StatusInfo"  Margin="0" Padding="5,0,0,0" />
         </StatusBar>
     </Grid>
     
