@@ -41,6 +41,7 @@ namespace BotClient
             listViewF.ItemsSource = client.Catalog.Files;
             Messages.ItemsSource = client.MessageLog.Messages;
             Contacts.ItemsSource = client.ContactList.Contacts;
+            StatusInfo.Text = $"Клиент успешно стартовал {DateTime.Now.ToShortDateString()} в {DateTime.Now.ToLongTimeString()}";
         }
 
         private void DataWindow_Closing(object sender, CancelEventArgs e)
@@ -64,6 +65,7 @@ namespace BotClient
             if (f.ShowDialog() == true)
             {
                 client.MessageLog.Save(f.FileName);
+                StatusInfo.Text = $"История сообщений выгружена в файл {f.FileName}";
             }
         }
 
@@ -73,6 +75,8 @@ namespace BotClient
             if (f.ShowDialog() == true)
             {
                 client.ContactList.Save(f.FileName);
+                StatusInfo.Text = $"Контакты выгружены в файл {f.FileName}";
+
             }
         }
 
