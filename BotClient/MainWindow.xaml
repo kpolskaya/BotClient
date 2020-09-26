@@ -9,143 +9,168 @@
         
         
         Title= "TelegramBotClient" Height="450" Width="800">
-    <TabControl HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Height="auto">
+            <Menu DockPanel.Dock="Left">
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Экспорт истории сообщений" Click="SaveHistory_Click"/>
+                    <MenuItem Header="Экспорт контактов" Click="SaveContacts_Click"/>
+                    <MenuItem Header="Выход" Click="Exit_Click"/>
+                </MenuItem>
+                <MenuItem Header="Еще..." Click="About_Click">
+                    <MenuItem Header="О программе"/>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
 
-        <TabItem Header="Телеграм бот">
+        <TabControl HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Stretch" Grid.Row="1">
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition />
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                           Height="auto">
-                    <Menu DockPanel.Dock ="Left" Height="auto" >
-                        <MenuItem Header="File" />
-                        <MenuItem Header="More..." />
-                    </Menu>
-                </DockPanel>
-                <StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="20">
-            
-                </StatusBar>
-                <Label Grid.Row="1" Grid.Column="0" Content="Список пользователей" 
-                       Background="Black" Foreground="LightGray" 
-                       FontWeight="DemiBold" FontSize="16" />
-                <ListBox Name="Contacts" Grid.Row="2" Grid.RowSpan="2" Grid.Column="0">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0">
-                                <TextBlock Text="{Binding FirstName}" Margin="2" FontSize="14" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <ListBox Name="Messages" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="Blue" Margin="2" BorderThickness="1" CornerRadius="5">
-                                <WrapPanel Margin="10">
-                                    <TextBlock Text="{Binding FirstName}" Margin="3" FontSize="14"/>
-                                    <TextBlock Text="{Binding StringFormat=sent {0}, Path=Type}" Margin="3" FontSize="14"/>
-                                    <TextBlock Text="{Binding Text}" Margin="3" FontSize="14" FontWeight="DemiBold" TextWrapping="Wrap"/>
-                                    <TextBlock Text="{Binding Time}" Margin="3" FontSize="14" Foreground="Gray"/>
-                                </WrapPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <Button Grid.Row="3" Grid.Column="1" 
-                        Name="StartBot" 
-                        Height="25" Content="Старт" 
-                        FontSize="16" 
-                        FontWeight="DemiBold" 
-                        ToolTipService.ToolTip="Кликните для запуска бота"
-                        Click="StartBot_Click"/>
+                <TabItem Header="Телеграм бот">
 
-            </Grid>
-        </TabItem>
-        <TabItem Header="Полученные файлы">
-            <Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition />
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <!--<DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                   Height="auto">
+                            <Menu DockPanel.Dock ="Left" Height="auto" >
+                                <MenuItem Header="File" />
+                                <MenuItem Header="More..." />
+                            </Menu>
+                        </DockPanel>-->
+                        <!--<StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="20">
 
-                <Grid.RowDefinitions>
-
-                    <RowDefinition Height="10*"/>
-                    <RowDefinition Height="90*"/>
-                </Grid.RowDefinitions>
-            <ListView x:Name ="listViewF" Grid.Row="2" Grid.ColumnSpan="5"  HorizontalAlignment="Left" Height="270" Width="765"   >
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
-
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Дата" Width="120" DisplayMemberBinding="{Binding Path = DTmes}"/>
-                        <GridViewColumn Header="Тип файла" Width="80" DisplayMemberBinding="{Binding Path = FileType}"/>
-                        <GridViewColumn Header="Путь к файлу" Width="410" DisplayMemberBinding="{Binding Path = FilePath}"/>
-                        <GridViewColumn Header="Отправитель" Width="80" DisplayMemberBinding="{Binding Path = ChatFirstN}"/>
-                        <GridViewColumn Header="Записан" Width="70" DisplayMemberBinding="{Binding Path = IsDownloaded}"/>
-
-                        <!--<GridViewColumn Header="Дата" Width="130">
-                            <GridViewColumn.CellTemplate>
-
+                        </StatusBar>-->
+                        <Label Grid.Row="1" Grid.Column="0" Content="Список пользователей" 
+                               Background="Black" Foreground="LightGray" 
+                               FontWeight="DemiBold" FontSize="16" />
+                        <ListBox Name="Contacts" Grid.Row="2" Grid.RowSpan="2" Grid.Column="0">
+                            <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Path=OpDate, StringFormat=\{0:dd.MM.yyyy\}}" HorizontalAlignment="Right" ></TextBlock>
+                                    <StackPanel Margin="0">
+                                        <TextBlock Text="{Binding FirstName}" Margin="2" FontSize="14" />
+                                    </StackPanel>
                                 </DataTemplate>
-
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-
-                        <GridViewColumn Header="Тип файла" Width="130">
-                            <GridViewColumn.CellTemplate>
-
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <ListBox Name="Messages" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
+                            <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Path=OpSum , StringFormat=\{0: ### ### ##0.00\}}" HorizontalAlignment="Right" ></TextBlock>
+                                    <Border BorderBrush="Blue" Margin="2" BorderThickness="1" CornerRadius="5">
+                                        <WrapPanel Margin="10">
+                                            <TextBlock Text="{Binding FirstName}" Margin="3" FontSize="14"/>
+                                            <TextBlock Text="{Binding StringFormat=sent {0}, Path=Type}" Margin="3" FontSize="14"/>
+                                            <TextBlock Text="{Binding Text}" Margin="3" FontSize="14" FontWeight="DemiBold" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Time}" Margin="3" FontSize="14" Foreground="Gray"/>
+                                        </WrapPanel>
+                                    </Border>
                                 </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Button Grid.Row="3" Grid.Column="1" 
+                                Name="StartBot" 
+                                Height="25" Content="Старт" 
+                                FontSize="16" 
+                                FontWeight="DemiBold" 
+                                ToolTipService.ToolTip="Кликните для запуска бота"
+                                Click="StartBot_Click"/>
 
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Полученные файлы">
+                    <Grid>
+
+                        <Grid.RowDefinitions>
+
+                            <RowDefinition Height="10*"/>
+                            <RowDefinition Height="90*"/>
+                        </Grid.RowDefinitions>
+                        <ListView x:Name ="listViewF" Grid.Row="2" Grid.ColumnSpan="5"  HorizontalAlignment="Left" Height="270" Width="765"   >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Дата" Width="120" DisplayMemberBinding="{Binding Path = DTmes}"/>
+                                    <GridViewColumn Header="Тип файла" Width="80" DisplayMemberBinding="{Binding Path = FileType}"/>
+                                    <GridViewColumn Header="Путь к файлу" Width="410" DisplayMemberBinding="{Binding Path = FilePath}"/>
+                                    <GridViewColumn Header="Отправитель" Width="80" DisplayMemberBinding="{Binding Path = ChatFirstN}"/>
+                                    <GridViewColumn Header="Записан" Width="70" DisplayMemberBinding="{Binding Path = IsDownloaded}"/>
+
+                                    <!--<GridViewColumn Header="Дата" Width="130">
+                                    <GridViewColumn.CellTemplate>
+
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=OpDate, StringFormat=\{0:dd.MM.yyyy\}}" HorizontalAlignment="Right" ></TextBlock>
+                                        </DataTemplate>
+
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
+                                <GridViewColumn Header="Тип файла" Width="130">
+                                    <GridViewColumn.CellTemplate>
+
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=OpSum , StringFormat=\{0: ### ### ##0.00\}}" HorizontalAlignment="Right" ></TextBlock>
+                                        </DataTemplate>
+
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
 
 
-                        <GridViewColumn Header="Путь к файлу" Width="430">
-                            <GridViewColumn.CellTemplate>
+                                <GridViewColumn Header="Путь к файлу" Width="430">
+                                    <GridViewColumn.CellTemplate>
 
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Account}" HorizontalAlignment="Left" ></TextBlock>
-                                </DataTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Account}" HorizontalAlignment="Left" ></TextBlock>
+                                        </DataTemplate>
 
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
 
                        
-                        <GridViewColumn Header="Загружен" Width="70">
-                            <GridViewColumn.CellTemplate>
+                                <GridViewColumn Header="Загружен" Width="70">
+                                    <GridViewColumn.CellTemplate>
 
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Note}" HorizontalAlignment="Left" ></TextBlock>
-                                </DataTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Note}" HorizontalAlignment="Left" ></TextBlock>
+                                        </DataTemplate>
 
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>-->
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>-->
 
-                    </GridView>
+                                </GridView>
 
-                </ListView.View>
-            </ListView>
-                <Button Content="Выгрузить историю" HorizontalAlignment="Left" Margin="105,17,0,0" VerticalAlignment="Top" Width="175" />
-                <Button Content="Загрузить историю" HorizontalAlignment="Left" Margin="500,17,0,0" VerticalAlignment="Top" Width="175" />
-            </Grid>
-        </TabItem>
-       
+                            </ListView.View>
+                        </ListView>
+                        <Button Content="Выгрузить историю" HorizontalAlignment="Left" Margin="105,17,0,0" VerticalAlignment="Top" Width="175" />
+                        <Button Content="Загрузить историю" HorizontalAlignment="Left" Margin="500,17,0,0" VerticalAlignment="Top" Width="175" />
+                    </Grid>
+                </TabItem>
 
-    </TabControl>
+
+        </TabControl>
+ 
+        <StatusBar Height="20" DockPanel.Dock="Bottom" Grid.Row="2">
+                
+        </StatusBar>
+    </Grid>
+    
 
 </Window>
