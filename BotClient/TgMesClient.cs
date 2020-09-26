@@ -49,7 +49,7 @@ namespace BotClient
         /// <summary>
         /// Лог сообщений
         /// </summary>
-        public MessageHistory BotMessageLog { get; set; }
+        public MessageHistory MessageLog { get; set; }
         
         /// <summary>
         /// Каталог присланных файлов
@@ -59,7 +59,7 @@ namespace BotClient
         /// <summary>
         /// Список контактов бота
         /// </summary>
-        public ContactList BotContactList { get; set; }
+        public BotContactList ContactList { get; set; }
         #endregion
 
         /// <summary>
@@ -71,14 +71,14 @@ namespace BotClient
             this.token = File.ReadAllText(@"token.txt");
 
             if (File.Exists(HistoryPath))
-                this.BotMessageLog = new MessageHistory(HistoryPath);
+                this.MessageLog = new MessageHistory(HistoryPath);
             else
-                this.BotMessageLog = new MessageHistory();
+                this.MessageLog = new MessageHistory();
 
             if (File.Exists(ContactPath))
-                this.BotContactList = new ContactList(ContactPath);
+                this.ContactList = new BotContactList(ContactPath);
             else
-                this.BotContactList = new ContactList();
+                this.ContactList = new BotContactList();
 
             if (File.Exists(CatalogPath))
                 this.Catalog = new FileCatalog(CatalogPath);
@@ -108,12 +108,12 @@ namespace BotClient
             {
                
                 message = new MessageRec(DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString());
-                BotMessageLog.Add(message);
+                MessageLog.Add(message);
 
                 botContact = new BotContact(e.Message.Chat.FirstName, e.Message.Chat.Id);
 
-                if (!BotContactList.Contains(botContact))
-                    BotContactList.Add(botContact);
+                if (!ContactList.Contains(botContact))
+                    ContactList.Add(botContact);
 
                 if (!Directory.Exists(Catalog.PathToUserFiles))
                 {
@@ -132,7 +132,7 @@ namespace BotClient
 
                 }
 
-            });
+           });
 
         }
 
@@ -307,12 +307,12 @@ namespace BotClient
                     break;
 
                 case "Photo":   // формирование пути для сохранения фотографии с уникальным именем
-                    string namep = "photo" + Guid.NewGuid();
+                    string namep = "photo" + Guid.NewGuid() + ".jpg";
                     FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{namep}";
                     f = new MyFile(FullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
                 case "Audio": // формирование пути для сохранения аудиофайла с уникальным именем
-                    string namea = "audio" + Guid.NewGuid();
+                    string namea = "audio" + Guid.NewGuid() + ".mp3";
                     FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{namea}";
                     f = new MyFile(FullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;

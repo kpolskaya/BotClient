@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 
 namespace BotClient
 {
@@ -38,14 +39,14 @@ namespace BotClient
 
             //ObservableCollection<MyFile> files = new ObservableCollection<MyFile>();
             listViewF.ItemsSource = client.Catalog.Files;
-            Messages.ItemsSource = client.BotMessageLog.Messages;
-            Contacts.ItemsSource = client.BotContactList.Contacts;
+            Messages.ItemsSource = client.MessageLog.Messages;
+            Contacts.ItemsSource = client.ContactList.Contacts;
         }
 
         private void DataWindow_Closing(object sender, CancelEventArgs e)
         {
-            client.BotMessageLog.Save(client.HistoryPath);
-            client.BotContactList.Save(client.ContactPath);
+            client.MessageLog.Save(client.HistoryPath);
+            client.ContactList.Save(client.ContactPath);
             client.Catalog.Save(client.CatalogPath);
             Application.Current.Shutdown();
         }
@@ -55,6 +56,34 @@ namespace BotClient
         private void StartBot_Click(object sender, RoutedEventArgs e)
         {
             //client.BotStart();
+        }
+
+        private void SaveHistory_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog f = new SaveFileDialog();
+            if (f.ShowDialog() == true)
+            {
+                client.MessageLog.Save(f.FileName);
+            }
+        }
+
+        private void SaveContacts_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog f = new SaveFileDialog();
+            if (f.ShowDialog() == true)
+            {
+                client.ContactList.Save(f.FileName);
+            }
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Простой телеграм-бот (домашнее задание 10), Автор: К. Польская");
         }
 
 

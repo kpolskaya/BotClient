@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace BotClient
 {
-    class ContactList //структура или класс?
+    class BotContactList //структура или класс?
     {
         public ObservableCollection<BotContact> Contacts { get; set; } // геттер нужно убрать
 
-        public ContactList()
+        public BotContactList()
         {
             this.Contacts = new ObservableCollection<BotContact>();
         }
-        public ContactList(string path)
+        public BotContactList(string path)
         {
             string jsonString;
             using (StreamReader fs = new StreamReader(path))
