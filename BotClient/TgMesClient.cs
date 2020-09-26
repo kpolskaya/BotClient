@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot.Args;
 using Telegram.Bot;
 using Telegram.Bot.Requests;
 using RestSharp;
 using Telegram.Bot.Types.InputFiles;
-using System.Collections.ObjectModel;
 
 namespace BotClient
 {
@@ -22,12 +16,11 @@ namespace BotClient
         private string token; 
         private MainWindow w;
         private TelegramBotClient bot;
-        //текущий файл, переданный пользователем
-        private MyFile f;
+        
         //текущее сообщение в чате
-        private MessageRec message;
-        //текущий контакт
-        private BotContact botContact;
+        //private MessageRec message;
+        ////текущий контакт
+        //private BotContact botContact;
         #endregion 
 
         #region Автосвойства
@@ -69,6 +62,7 @@ namespace BotClient
         public TgMesClient(MainWindow W)
         {
             this.token = File.ReadAllText(@"token.txt");
+           
 
             if (File.Exists(HistoryPath))
                 this.MessageLog = new MessageHistory(HistoryPath);
@@ -107,10 +101,10 @@ namespace BotClient
            this.w.Dispatcher.Invoke(() =>
             {
                
-                message = new MessageRec(DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString());
+                MessageRec message = new MessageRec(DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString());
                 MessageLog.Add(message);
 
-                botContact = new BotContact(e.Message.Chat.FirstName, e.Message.Chat.Id);
+                BotContact botContact = new BotContact(e.Message.Chat.FirstName, e.Message.Chat.Id);
 
                 if (!ContactList.Contains(botContact))
                     ContactList.Add(botContact);
@@ -126,9 +120,7 @@ namespace BotClient
                 }
                 else
                 {
-                    IdentifyFile(e);
-                    DownLoad(f);
-                   
+                     DownLoad(IdentifiedFile(e));
 
                 }
 
@@ -162,7 +154,7 @@ namespace BotClient
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);  //переделать вывод в статусбар
+                Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);  
                 
             }
             finally
@@ -186,7 +178,7 @@ namespace BotClient
                 case "/ковид":  //обработка запроса на информацию по Covid19: отправка фото и данных с covid19api.com в телеграмм чат
                                 //запрос через RapidAPI агрегатор, бесплатный режим с ограничениями по количеству запросов
                     SendPhoto("coronavirus-5018466_640.jpg", chatID);
-                    //Console.WriteLine($"{DateTime.Now.ToLongTimeString()} | Bot | {chatID}: coronavirus-5018466_640.jpg | Photo");
+                    
                     //try
                     //{
                     //    var client = new RestClient("https://covid-19-data.p.rapidapi.com/totals?format=json");
@@ -233,7 +225,7 @@ namespace BotClient
 
                 case "/файл":   //отправка файла по запросу
                     SendFile("covid-19-4938932_640.png", chatID);
-                    Console.WriteLine($"{DateTime.Now.ToLongTimeString()} | Bot | {chatID}: covid-19-4938932_640.png | Document");
+                    
                     break;
 
                 default:    // меню 
@@ -242,12 +234,13 @@ namespace BotClient
                            "/файл - получить котика.\n" +
                            "Боту можно отправить файл, картинку, видео и звук.";
                     await bot.SendTextMessageAsync(chatID, botReply);
-                    Console.WriteLine($"{DateTime.Now.ToLongTimeString()} | Bot | {chatID}: {botReply} | Text");
+                    MessageLog.Add(new MessageRec(DateTime.Now.ToLongTimeString(), 0, "Bot", botReply, "Text"));
+                   
                     break;
             }
 
             /// <summary>
-            /// Загружает фото из телеграмм чата
+            /// Отправляет фото в телеграмм чат
             /// </summary>
             /// <param name="path">путь для сохранения на компьютере</param>
             /// <param name="chatId">ID чата</param>
@@ -295,9 +288,10 @@ namespace BotClient
        /// </summary>
        /// <param name="e">сообщение от бота</param>
        /// <returns>Атрибуты полученного файла для записи в каталог</returns>
-       public MyFile IdentifyFile(MessageEventArgs e)
+       public MyFile IdentifiedFile(MessageEventArgs e)
         {
             string FullPath;
+            MyFile f;
             bot.SendTextMessageAsync(e.Message.Chat.Id, "Спасибо за файл");
             switch (e.Message.Type.ToString())
             {

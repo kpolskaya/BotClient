@@ -30,19 +30,16 @@
 
         <TabControl HorizontalAlignment="Stretch" Margin="3" VerticalAlignment="Stretch" Grid.Row="1">
 
-            <TabItem Header="Телеграм бот">
+            <TabItem Header="Сообщения">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition SharedSizeGroup="messageWindow"/>
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
                         <RowDefinition />
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <!--<DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                 Height="auto">
@@ -54,10 +51,10 @@
                     <!--<StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="20">
 
                     </StatusBar>-->
-                    <Label Grid.Row="1" Grid.Column="0" Content="Список пользователей" 
+                    <Label Grid.Row="0" Grid.Column="0" Content="Список пользователей" 
                             Background="DarkGray" Foreground="Black" 
                             FontWeight="DemiBold" FontSize="16" />
-                    <ListBox Name="Contacts" Grid.Row="2" Grid.RowSpan="2" Grid.Column="0">
+                    <ListBox Name="Contacts" Grid.Row="1" Grid.Column="0">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="0">
@@ -66,7 +63,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <ListBox Name="Messages" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
+                    <ListBox Name="Messages" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="DarkGray" Margin="2" BorderThickness="1" CornerRadius="5">
@@ -90,15 +87,15 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Полученные файлы">
-                <Grid>
+            <TabItem Header="Файлы">
+                <Grid Width="auto">
 
                     <Grid.RowDefinitions>
 
                         <RowDefinition Height="10*"/>
                         <RowDefinition Height="90*"/>
                     </Grid.RowDefinitions>
-                    <ListView x:Name ="listViewF" Grid.Row="2" Grid.ColumnSpan="5"  HorizontalAlignment="Left" Height="270" Width="765"   >
+                    <ListView x:Name ="listViewF" Grid.Row="1" HorizontalAlignment="Left" Height="auto" Width="auto" Margin="2,10,2,2">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
