@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -6,9 +7,9 @@ using System.IO;
 
 namespace BotClient
 {
-    class BotContactList //структура или класс?
+    class BotContactList 
     {
-        public ObservableCollection<BotContact> Contacts { get; set; } // геттер нужно убрать
+        public ObservableCollection<BotContact> Contacts { get; set; } //сеттер можно убрать?
 
         public BotContactList()
         {
@@ -17,9 +18,19 @@ namespace BotClient
         public BotContactList(string path)
         {
             string jsonString;
-            using (StreamReader fs = new StreamReader(path))
-                jsonString = fs.ReadToEnd();
-            this.Contacts = JsonConvert.DeserializeObject<ObservableCollection<BotContact>>(jsonString);
+            try
+            {
+                using (StreamReader fs = new StreamReader(path))
+                    jsonString = fs.ReadToEnd();
+                this.Contacts = JsonConvert.DeserializeObject<ObservableCollection<BotContact>>(jsonString);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Не удалось прочитать файл контактов! " + ex.Message);
+                this.Contacts = new ObservableCollection<BotContact>();
+            }
+
         }
 
         public void Add(BotContact contact)
@@ -38,8 +49,18 @@ namespace BotClient
         public void Save(string path)
         {
             string jsonFile = JsonConvert.SerializeObject(this.Contacts);
-            using (StreamWriter fs = new StreamWriter(path, false))
+            try
+            { 
+                using (StreamWriter fs = new StreamWriter(path, false))
                 fs.Write(jsonFile);
+
+            }
+            catch (Exception ex)
+            {
+
+                Debug.WriteLine("Невозможно сохранить файл контактов по указанному пути! " + ex.Message);
+            }
+           
 
         }
     }

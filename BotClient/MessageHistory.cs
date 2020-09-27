@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 
 namespace BotClient
@@ -14,7 +15,7 @@ namespace BotClient
         public ObservableCollection<MessageRec> Messages { get; set; } //геттер убрать?
 
         /// <summary>
-        /// возможно этот конструктор не нужен - проверить или переделать в структуру!
+        /// Пустой конструктор
         /// </summary>
         public MessageHistory()
         {
@@ -24,9 +25,21 @@ namespace BotClient
         public MessageHistory(string path)
         {
             string jsonString;
-            using (StreamReader fs = new StreamReader(path))
+
+            try
+            {
+                using (StreamReader fs = new StreamReader(path))
                 jsonString = fs.ReadToEnd();
-            this.Messages = JsonConvert.DeserializeObject<ObservableCollection<MessageRec>>(jsonString);
+                this.Messages = JsonConvert.DeserializeObject<ObservableCollection<MessageRec>>(jsonString);
+
+            }
+            catch (Exception ex)
+            {
+
+                Debug.WriteLine("Не удалось прочитать файл истории сообщений! " + ex.Message);
+                this.Messages = new ObservableCollection<MessageRec>();
+            }
+            
         }
 
         public void Add(MessageRec message)
@@ -37,9 +50,18 @@ namespace BotClient
         public void Save(string path)
         {
             string jsonFile = JsonConvert.SerializeObject(this.Messages);
-            using (StreamWriter fs = new StreamWriter(path, false))
-                fs.Write(jsonFile);
 
+            try
+            {
+                using (StreamWriter fs = new StreamWriter(path, false))
+                fs.Write(jsonFile);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Невозможно сохранить файл истории сообщений по указанному пути! " + ex.Message);
+               
+            }
+ 
         }
 
        

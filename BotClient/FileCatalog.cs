@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
+using System.Diagnostics;
 
 namespace BotClient
 {
@@ -29,11 +29,19 @@ namespace BotClient
         {
             this.PathToUserFiles = Directory.GetCurrentDirectory();
             string json;
-            using (StreamReader fs = new StreamReader(path))
-                json = fs.ReadToEnd();
-            Files = JsonConvert.DeserializeObject<ObservableCollection<MyFile>>(json);
 
-
+            try
+            {
+                using (StreamReader fs = new StreamReader(path))
+                    json = fs.ReadToEnd();
+                this.Files = JsonConvert.DeserializeObject<ObservableCollection<MyFile>>(json);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Не удалось прочитать журнал полученных файлов! " + ex.Message);
+                this.Files = new ObservableCollection<MyFile>();
+            }
+  
         }
 
 
@@ -44,8 +52,19 @@ namespace BotClient
         public void Save(string path)
         {
             string json = JsonConvert.SerializeObject(Files);
-            using (StreamWriter fs = new StreamWriter(path, false))
-                fs.Write(json);
+
+            try
+            {
+                using (StreamWriter fs = new StreamWriter(path, false))
+                    fs.Write(json);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Невозможно сохранить журнал полученных файлов по указанному пути! " + ex.Message);
+
+            }
+            
 
         }
 
