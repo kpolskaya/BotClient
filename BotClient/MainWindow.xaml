@@ -28,11 +28,11 @@
             </Menu>
         </DockPanel>
 
-        <TabControl HorizontalAlignment="Stretch" Margin="3" VerticalAlignment="Stretch" Grid.Row="1">
+        <TabControl HorizontalAlignment="Stretch" Margin="3,10,3,3" VerticalAlignment="Stretch" Grid.Row="1">
 
             <TabItem Header="Сообщения">
 
-                <Grid>
+                <Grid Margin="0,10,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition />
@@ -91,24 +91,23 @@
                 <Grid Width="auto">
 
                     <Grid.RowDefinitions>
-
-                        <RowDefinition Height="10*"/>
-                        <RowDefinition Height="90*"/>
+                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <ListView x:Name ="listViewF" Grid.Row="1" HorizontalAlignment="Left" Height="auto" Width="auto" Margin="2,10,2,2">
-                        <ListView.ItemContainerStyle>
+                    
+                    <ListView x:Name ="listViewF" Grid.Row="0" HorizontalAlignment="Left" Height="auto" Width="auto" Margin="0,20,0,0" Padding="0">
+                        <!--<ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             </Style>
-                        </ListView.ItemContainerStyle>
+                        </ListView.ItemContainerStyle>-->
 
                         <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Дата" Width="120" DisplayMemberBinding="{Binding Path = DTmes}"/>
+                            <GridView AllowsColumnReorder="True">
+                                <GridViewColumn Header="Время" Width="120" DisplayMemberBinding="{Binding Path = DTmes}"/>
                                 <GridViewColumn Header="Тип файла" Width="80" DisplayMemberBinding="{Binding Path = FileType}"/>
-                                <GridViewColumn Header="Путь к файлу" Width="410" DisplayMemberBinding="{Binding Path = FilePath}"/>
-                                <GridViewColumn Header="Отправитель" Width="80" DisplayMemberBinding="{Binding Path = ChatFirstN}"/>
-                                <GridViewColumn Header="Записан" Width="70" DisplayMemberBinding="{Binding Path = IsDownloaded}"/>
+                                <GridViewColumn Header="Записан?" Width="60" DisplayMemberBinding="{Binding Path = IsDownloaded}"/>
+                                <GridViewColumn Header="Отправитель" Width ="90" DisplayMemberBinding="{Binding Path = ChatFirstN}"/>
+                                <GridViewColumn Header="Путь к файлу"  DisplayMemberBinding="{Binding Path = FilePath}"/>
 
                                 <!--<GridViewColumn Header="Дата" Width="130">
                                 <GridViewColumn.CellTemplate>
@@ -156,8 +155,7 @@
 
                         </ListView.View>
                     </ListView>
-                    <Button Content="Выгрузить историю" HorizontalAlignment="Left" Margin="105,17,0,0" VerticalAlignment="Top" Width="175" />
-                    <Button Content="Загрузить историю" HorizontalAlignment="Left" Margin="500,17,0,0" VerticalAlignment="Top" Width="175" />
+                    
                 </Grid>
             </TabItem>
 
