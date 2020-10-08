@@ -9,30 +9,37 @@ namespace BotClient
 {
     class BotContactList 
     {
-        public ObservableCollection<BotContact> Contacts { get; set; } //сеттер можно убрать?
+        public ObservableCollection<BotContact> Contacts { get; } //сеттер можно убрать?
+
+        /// <summary>
+        /// Путь к файлу списка контактов
+        /// </summary>
+        string contactPath = $@"{Directory.GetCurrentDirectory()}\contacts.json";
 
         public BotContactList()
         {
-            this.Contacts = new ObservableCollection<BotContact>();
-        }
-        public BotContactList(string path)
-        {
-            string jsonString;
-            try
+            
+            if (File.Exists(contactPath))
             {
-                using (StreamReader fs = new StreamReader(path))
-                    jsonString = fs.ReadToEnd();
-                this.Contacts = JsonConvert.DeserializeObject<ObservableCollection<BotContact>>(jsonString);
+                string jsonString;
+                try
+                {
+                    using (StreamReader fs = new StreamReader(contactPath))
+                        jsonString = fs.ReadToEnd();
+                    this.Contacts = JsonConvert.DeserializeObject<ObservableCollection<BotContact>>(jsonString);
 
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Не удалось прочитать файл контактов! " + ex.Message);
+                    this.Contacts = new ObservableCollection<BotContact>();
+                }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Не удалось прочитать файл контактов! " + ex.Message);
+            else 
                 this.Contacts = new ObservableCollection<BotContact>();
-            }
 
         }
-
+        
         public void Add(BotContact contact)
         {
             this.Contacts.Add(contact);
@@ -62,6 +69,10 @@ namespace BotClient
             }
            
 
+        }
+        public void Save()
+        {
+            Save(contactPath);
         }
     }
 }

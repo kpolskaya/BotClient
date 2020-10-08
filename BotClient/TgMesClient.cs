@@ -6,6 +6,8 @@ using Telegram.Bot;
 using Telegram.Bot.Requests;
 using RestSharp;
 using Telegram.Bot.Types.InputFiles;
+using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 
 namespace BotClient
 {
@@ -16,28 +18,19 @@ namespace BotClient
         private string token; 
         private MainWindow w;
         private TelegramBotClient bot;
+        private FileProperties currentFileProps;
         
-        //текущее сообщение в чате
-        //private MessageRec message;
-        ////текущий контакт
-        //private BotContact botContact;
         #endregion 
 
         #region Автосвойства
-        /// <summary>
-        /// Путь к файлу с историей сообщений
-        /// </summary>
-        public string HistoryPath { get { return $@"{Directory.GetCurrentDirectory()}\messagelog.json"; } } 
+        ///// <summary>
+        ///// Путь к файлу с историей сообщений
+        ///// </summary>
+        //public string HistoryPath { get { return $@"{Directory.GetCurrentDirectory()}\messagelog.json"; } } 
 
-        /// <summary>
-        /// Путь к файлу списка контактов
-        /// </summary>
-        public string ContactPath { get { return $@"{Directory.GetCurrentDirectory()}\contacts.json"; } } 
+       
 
-        /// <summary>
-        /// Путь к файлу каталога полученных файлов
-        /// </summary>
-        public string CatalogPath { get { return $@"{Directory.GetCurrentDirectory()}\catalog.json"; } }
+        
 
         /// <summary>
         /// Лог сообщений
@@ -61,40 +54,27 @@ namespace BotClient
         /// <param name="W">вызывающее окно</param>
         public TgMesClient(MainWindow W)
         {
-            this.token = File.ReadAllText(@"token.txt");
+            try
+            { 
+                this.token = File.ReadAllText(@"token.txt");
+                
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Токен не может быть прочитан " + ex.Message);
+                throw ex;
+            }   
+
+            
            
 
-            if (File.Exists(HistoryPath))
-                this.MessageLog = new MessageHistory(HistoryPath);
-            else
-                this.MessageLog = new MessageHistory();
+            this.MessageLog = new MessageHistory();
 
-            if (File.Exists(ContactPath))
-                this.ContactList = new BotContactList(ContactPath);
-            else
-                this.ContactList = new BotContactList();
+            this.ContactList = new BotContactList();
 
-            if (File.Exists(CatalogPath))
-                this.Catalog = new FileCatalog(CatalogPath);
-
-            else
-                this.Catalog = new FileCatalog();
+            this.Catalog = new FileCatalog();
             
-            if (!Directory.Exists(Catalog.PathToUserFiles))
-            {
-                try
-                {
-                    Directory.CreateDirectory(Catalog.PathToUserFiles);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("Невозможно создать папку каталога! " + ex.Message);
-                    throw ex;
-                }
-            }
-                
-          
-
+            
             this.w = W;
 
             bot = new TelegramBotClient(this.token);
@@ -113,9 +93,9 @@ namespace BotClient
         public void MessageListener(object sender, Telegram.Bot.Args.MessageEventArgs e)
         {
             
-           this.w.Dispatcher.Invoke(() =>
+           this.w.Dispatcher.Invoke(async() =>
             {
-               
+                string botReply = "Спасибо.";
                 MessageRec message = new MessageRec(DateTime.Now.ToLongTimeString(), e.Message.Chat.Id, e.Message.Chat.FirstName, e.Message.Text, e.Message.Type.ToString());
                 MessageLog.Add(message);
 
@@ -131,11 +111,18 @@ namespace BotClient
                 }
                 else
                 {
-                     DownLoad(IdentifiedFile(e));
+                    currentFileProps = IdentifiedFile(e);
+                    if (!String.IsNullOrEmpty(currentFileProps.FilePath))
+                        DownLoad(IdentifiedFile(e));
+
+                    else
+                        botReply += " Мне неизвестен тип этого файла, не знаю что с ним делать.";
 
                 }
+                await bot.SendTextMessageAsync(currentFileProps.ChatId, botReply);
+                MessageLog.Add(new MessageRec(DateTime.Now.ToLongTimeString(), 0, "Bot", botReply, "Text"));
 
-           });
+            });
 
         }
 
@@ -144,9 +131,9 @@ namespace BotClient
         /// Загружает файл из телеграмм чата
         /// </summary>
         /// <param name="f">атрибуты полученного файла</param>
-        public async void DownLoad(MyFile f)
+        public async void DownLoad(FileProperties f)
         {
-            string botReply = "Спасибо. ";
+            
             try
             {
                 if (!Directory.Exists($@"{Catalog.PathToUserFiles}\{f.FileType}"))
@@ -166,15 +153,14 @@ namespace BotClient
             }
             catch (Exception ex)
             {
-                botReply += "Возможно, мне неизвестен тип этого файла или произошла ошибка при загрузке.";
+                
                 Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);
                 
             }
             finally
             {
                 Catalog.Add(f);
-                await bot.SendTextMessageAsync(f.ChatId, botReply);
-                MessageLog.Add(new MessageRec(DateTime.Now.ToLongTimeString(), 0, "Bot", botReply, "Text"));
+                
             }
         }
 
@@ -196,27 +182,6 @@ namespace BotClient
                     try
                     {   
                         
-                        ////запрос через RapidAPI агрегатор, бесплатный режим с ограничениями по количеству запросов
-                        //    var client = new RestClient("https://covid-19-data.p.rapidapi.com/totals?format=json");
-                        //    var request = new RestRequest(Method.GET);
-                        //    request.AddHeader("x-rapidapi-host", "covid-19-data.p.rapidapi.com");
-                        //    request.AddHeader("x-rapidapi-key", "d93af22c62msh260c18d52dc8569p147315jsn68b6d709f561"); //k
-                        //    IRestResponse response = client.Execute(request);
-
-                        //    botReply = "Всего в мире: \n";
-                        //    Newtonsoft.Json.Linq.JArray o = Newtonsoft.Json.Linq.JArray.Parse(response.Content);
-                        //    var confirmed = (string)(o[0]["confirmed"]);
-                        //    var recovered = (string)o[0]["recovered"];
-                        //    var critical = (string)o[0]["critical"];
-                        //    var deaths = (string)o[0]["deaths"];
-                        //    var lastUpdate = (string)o[0]["lastUpdate"];
-                        //    botReply += $"Подтвержденных случаев {confirmed}\nВыздоровeло {recovered}\nВ критическом состоянии {critical}\n" +
-                        //                $"Умерло {deaths}\nИнформация обновлена {lastUpdate}";
-
-                        //    await bot.SendTextMessageAsync(chatID, botReply);
-                        //    Console.WriteLine($"{DateTime.Now.ToLongTimeString()} | Bot | {chatID}: {botReply} | Text");
-
-                        //альтернативный источник информации о Covid 19 - без токена.
                         var client = new RestClient("https://api.covid19api.com/world/total");
                         client.Timeout = -1;
                         var request = new RestRequest(Method.GET);
@@ -261,7 +226,7 @@ namespace BotClient
                                    
         }
 
-        // Два метода ниже практически дублируют друг друга, можно переписать их используя делегаты!
+        // Два метода ниже практически дублируют друг друга, наверное, можно переписать их используя делегаты
 
         /// <summary>
         /// Отправляет фото в телеграмм чат
@@ -315,11 +280,11 @@ namespace BotClient
         /// </summary>
         /// <param name="e">сообщение от бота</param>
         /// <returns>Атрибуты полученного файла для записи в каталог</returns>
-        public MyFile IdentifiedFile(MessageEventArgs e)
+        public FileProperties IdentifiedFile(MessageEventArgs e)
         {
             string fullPath;
             string fileName;
-            MyFile f;
+            FileProperties f;
             
             switch (e.Message.Type.ToString())
             {
@@ -327,7 +292,7 @@ namespace BotClient
                     
                     fullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{e.Message.Document.FileName}";
 
-                    f = new MyFile(fullPath, e.Message.Document.FileId, e.Message.Type.ToString(), 
+                    f = new FileProperties(fullPath, e.Message.Document.FileId, e.Message.Type.ToString(), 
                                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
 
@@ -336,7 +301,7 @@ namespace BotClient
                     fileName = "photo" + Guid.NewGuid() + ".jpg";
                     fullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{fileName}";
 
-                    f = new MyFile(fullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), 
+                    f = new FileProperties(fullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), 
                                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
                 case "Audio": // формирование пути для сохранения аудиофайла с уникальным именем
@@ -344,19 +309,18 @@ namespace BotClient
                     fileName = "audio" + Guid.NewGuid() + ".mp3";
                     fullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{fileName}";
 
-                    f = new MyFile(fullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), 
+                    f = new FileProperties(fullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), 
                                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
 
                 case "Video":   // формирование пути для сохранения файла с именем, полученным от пользователя
                     fullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{e.Message.Document.FileName}";
 
-                    f = new MyFile(fullPath, e.Message.Video.FileId, e.Message.Type.ToString(), 
+                    f = new FileProperties(fullPath, e.Message.Video.FileId, e.Message.Type.ToString(), 
                                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
                 default:
-                    f = new MyFile("", "", e.Message.Type.ToString(), 
-                                    DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    f = new FileProperties();
                     
                     break;
             }

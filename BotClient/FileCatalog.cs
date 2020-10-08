@@ -9,53 +9,53 @@ namespace BotClient
 {
     class FileCatalog
     {
-        public string PathToUserFiles { get; } //первая часть пути
-        public ObservableCollection<MyFile> Files { get; set; }
+        public string PathToUserFiles { get { return $@"{Directory.GetCurrentDirectory()}"; } }  //первая часть пути
+        public ObservableCollection<FileProperties> Files { get; }
 
-        public FileCatalog(string CatPath, ObservableCollection<MyFile> Files)
-        {
-            this.PathToUserFiles = CatPath;
-            this.Files = Files;
+        /// <summary>
+        /// Путь к json-файлу каталога полученных файлов
+        /// </summary>
+        string catalogPath = $@"{Directory.GetCurrentDirectory()}\catalog.json";
 
-        }
 
         public FileCatalog()
         {
-            this.PathToUserFiles = Directory.GetCurrentDirectory();
-            this.Files = new ObservableCollection<MyFile>();
+            if (File.Exists(catalogPath))
+            {
+
+                string json;
+
+                try
+                {
+                    using (StreamReader fs = new StreamReader(catalogPath))
+                        json = fs.ReadToEnd();
+                    this.Files = JsonConvert.DeserializeObject<ObservableCollection<FileProperties>>(json);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Не удалось прочитать журнал полученных файлов! " + ex.Message);
+                    this.Files = new ObservableCollection<FileProperties>();
+                }
+
+            }
+
+            else
+                this.Files = new ObservableCollection<FileProperties>();
+
         }
 
-        public FileCatalog(string path)
-        {
-            this.PathToUserFiles = Directory.GetCurrentDirectory();
-            string json;
-
-            try
-            {
-                using (StreamReader fs = new StreamReader(path))
-                    json = fs.ReadToEnd();
-                this.Files = JsonConvert.DeserializeObject<ObservableCollection<MyFile>>(json);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Не удалось прочитать журнал полученных файлов! " + ex.Message);
-                this.Files = new ObservableCollection<MyFile>();
-            }
-  
-        }
-
-
-        public void Add(MyFile f)
+       
+        public void Add(FileProperties f)
         {
             this.Files.Add(f);
         }
-        public void Save(string path)
+        public void Save()
         {
             string json = JsonConvert.SerializeObject(Files);
 
             try
             {
-                using (StreamWriter fs = new StreamWriter(path, false))
+                using (StreamWriter fs = new StreamWriter(this.catalogPath, false))
                     fs.Write(json);
 
             }

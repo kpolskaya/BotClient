@@ -43,9 +43,9 @@ namespace BotClient
 
         private void DataWindow_Closing(object sender, CancelEventArgs e)
         {
-            client.MessageLog.Save(client.HistoryPath);
-            client.ContactList.Save(client.ContactPath);
-            client.Catalog.Save(client.CatalogPath);
+            client.MessageLog.Save();
+            client.ContactList.Save();
+            client.Catalog.Save();
             Application.Current.Shutdown();
         }
 

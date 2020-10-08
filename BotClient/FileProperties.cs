@@ -27,9 +27,6 @@ namespace BotClient
             this.ChatId = ChatId;
             this.IsDownloaded = false;
         }
-        //public override string ToString()
-        //{
-        //    return base.ToString();
-        //}
+        
     }
 }
