@@ -13,9 +13,9 @@ namespace BotClient
     class FileCatalog
     {
         public string PathToUserFiles { get; } //первая часть пути
-        public ObservableCollection<MyFile> Files { get; set; }
+        public ObservableCollection<FileProperties> Files { get; set; }
 
-        public FileCatalog(string CatPath, ObservableCollection<MyFile> Files)
+        public FileCatalog(string CatPath, ObservableCollection<FileProperties> Files)
         {
             this.PathToUserFiles = CatPath;
             this.Files = Files;
@@ -25,7 +25,7 @@ namespace BotClient
         public FileCatalog()
         {
             this.PathToUserFiles = Directory.GetCurrentDirectory();
-            this.Files = new ObservableCollection<MyFile>();
+            this.Files = new ObservableCollection<FileProperties>();
         }
 
         public FileCatalog(string path)
@@ -34,13 +34,13 @@ namespace BotClient
             string json;
             using (StreamReader fs = new StreamReader(path))
                 json = fs.ReadToEnd();
-            Files = JsonConvert.DeserializeObject<ObservableCollection<MyFile>>(json);
+            Files = JsonConvert.DeserializeObject<ObservableCollection<FileProperties>>(json);
 
 
         }
 
 
-        public void Add(MyFile f)
+        public void Add(FileProperties f)
         {
             this.Files.Add(f);
         }

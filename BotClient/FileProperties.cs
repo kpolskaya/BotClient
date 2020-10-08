@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BotClient
 {
-    class MyFile
+    struct FileProperties
     {
         public string FilePath { get; set; }
 
@@ -19,7 +19,7 @@ namespace BotClient
 
         public bool IsDownloaded { get; set; }
        
-        public MyFile(string FilePath, string FileId, string FileType, string DTmes,string ChatFirstN, long ChatId)
+        public FileProperties(string FilePath, string FileId, string FileType, string DTmes,string ChatFirstN, long ChatId)
         {
             this.FilePath = FilePath;
             this.FileId = FileId;

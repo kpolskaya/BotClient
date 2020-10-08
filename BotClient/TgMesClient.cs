@@ -23,7 +23,7 @@ namespace BotClient
         private MainWindow w;
         private TelegramBotClient bot;
         //текущий файл, переданный пользователем
-        private MyFile f;
+        private FileProperties f;
         //текущее сообщение в чате
         private MessageRec message;
         //текущий контакт
@@ -119,6 +119,7 @@ namespace BotClient
                 {
                     Directory.CreateDirectory(Catalog.PathToUserFiles);
                 }
+                
                 if (e.Message.Type.ToString() == "Text")
                 {
                     string messageText = e.Message.Text.ToLower();
@@ -126,10 +127,12 @@ namespace BotClient
                 }
                 else
                 {
-                    IdentifyFile(e);
-                    DownLoad(f);
-                   
-
+                    bot.SendTextMessageAsync(e.Message.Chat.Id, "Спасибо за файл");
+                    f = IdentifyFile(e);
+                    if (!String.IsNullOrEmpty(f.FilePath))                   
+                        DownLoad(f);
+                    else
+                        bot.SendTextMessageAsync(e.Message.Chat.Id, "Неизвестный тип файла. Не знаю, что с ним делать");
                 }
 
             });
@@ -141,7 +144,7 @@ namespace BotClient
         /// Загружает файл из телеграмм чата
         /// </summary>
         /// <param name="f">атрибуты полученного файла</param>
-        public async void DownLoad(MyFile f)
+        public async void DownLoad(FileProperties f)
         {
             try
             {
@@ -162,7 +165,7 @@ namespace BotClient
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);  //переделать вывод в статусбар
+                Debug.WriteLine("Ошибка загрузки файла: " + ex.Message);  
                 
             }
             finally
@@ -295,35 +298,36 @@ namespace BotClient
        /// </summary>
        /// <param name="e">сообщение от бота</param>
        /// <returns>Атрибуты полученного файла для записи в каталог</returns>
-       public MyFile IdentifyFile(MessageEventArgs e)
+       public FileProperties IdentifyFile(MessageEventArgs e)
         {
             string FullPath;
-            bot.SendTextMessageAsync(e.Message.Chat.Id, "Спасибо за файл");
+            FileProperties f;
+            
             switch (e.Message.Type.ToString())
             {
                 case "Document":    // формирование пути для сохранения файла с именем, полученным от пользователя
                     FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{e.Message.Document.FileName}";
-                    f = new MyFile(FullPath, e.Message.Document.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    f = new FileProperties(FullPath, e.Message.Document.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
 
                 case "Photo":   // формирование пути для сохранения фотографии с уникальным именем
                     string namep = "photo" + Guid.NewGuid();
                     FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{namep}";
-                    f = new MyFile(FullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    f = new FileProperties(FullPath, e.Message.Photo[e.Message.Photo.Length - 1].FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
                 case "Audio": // формирование пути для сохранения аудиофайла с уникальным именем
                     string namea = "audio" + Guid.NewGuid();
                     FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{namea}";
-                    f = new MyFile(FullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    f = new FileProperties(FullPath, e.Message.Audio.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
 
                 case "Video":   // формирование пути для сохранения файла с именем, полученным от пользователя
                     FullPath = $@"{Catalog.PathToUserFiles}\{e.Message.Type}\{e.Message.Document.FileName}";
-                    f = new MyFile(FullPath, e.Message.Video.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
+                    f = new FileProperties(FullPath, e.Message.Video.FileId, e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
                     break;
                 default:
-                    f = new MyFile("", "", e.Message.Type.ToString(), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), e.Message.Chat.FirstName, e.Message.Chat.Id);
-                    bot.SendTextMessageAsync(e.Message.Chat.Id, "Файл неизвестного типа. Не знаю, что с ним делать.");
+                    f = new FileProperties();
+                    //bot.SendTextMessageAsync(e.Message.Chat.Id, "Файл неизвестного типа. Не знаю, что с ним делать.");
                     break;
             }
             return f;

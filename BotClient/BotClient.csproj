@@ -70,7 +70,7 @@
     <Compile Include="FileCatalog.cs" />
     <Compile Include="MessageHistory.cs" />
     <Compile Include="MessageRec.cs" />
-    <Compile Include="MyFile.cs" />
+    <Compile Include="FileProperties.cs" />
     <Compile Include="TgMesClient.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
