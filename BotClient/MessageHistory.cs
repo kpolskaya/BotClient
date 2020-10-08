@@ -7,6 +7,9 @@ using System.IO;
 
 namespace BotClient
 {
+    /// <summary>
+    /// Лог сообщений
+    /// </summary>
     class MessageHistory
     {
         /// <summary>
@@ -19,9 +22,6 @@ namespace BotClient
         /// </summary>
         string historyPath = $@"{Directory.GetCurrentDirectory()}\messagelog.json";
 
-        /// <summary>
-        /// Конструктор
-        /// </summary>
         public MessageHistory()
         {
             
@@ -45,7 +45,6 @@ namespace BotClient
             }
             else
                 this.Messages = new ObservableCollection<MessageRec>();
-
         }
 
         
@@ -70,15 +69,12 @@ namespace BotClient
                 Debug.WriteLine("Невозможно сохранить файл истории сообщений по указанному пути! " + ex.Message);
                
             }
- 
-        }
+         }
 
         public void Save()
         {
             Save(historyPath);
         }
-       
-
 
     }
 }

@@ -29,12 +29,12 @@ namespace BotClient
         // Предусмотреть возможность сохранения истории сообщений, присланных боту в JSON-файл 
         
         
-        TgMesClient client;
+        TelegramMessageClient client;
         
         public MainWindow()
         {
             InitializeComponent();
-            client = new TgMesClient(this);
+            client = new TelegramMessageClient(this);
             listViewF.ItemsSource = client.Catalog.Files;
             Messages.ItemsSource = client.MessageLog.Messages;
             Contacts.ItemsSource = client.ContactList.Contacts;

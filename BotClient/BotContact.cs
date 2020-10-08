@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace BotClient
 {
+    /// <summary>
+    /// Структура контакта
+    /// </summary>
     struct BotContact
     {
         public string FirstName { get; set; }

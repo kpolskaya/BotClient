@@ -7,27 +7,36 @@ using System.Diagnostics;
 
 namespace BotClient
 {
-    class FileCatalog
+    /// <summary>
+    /// Каталог присланных пользователями файлов (тип которых поддерживается ботом)
+    /// </summary>
+    class UpploadedFilesCatalog
     {
-        public string PathToUserFiles { get { return $@"{Directory.GetCurrentDirectory()}"; } }  //первая часть пути
+        
+        /// <summary>
+        /// Первая часть пути к папкам с файлами 
+        /// </summary>
+        public string PathToUserFiles { get { return $@"{Directory.GetCurrentDirectory()}"; } } 
+        
+        
         public ObservableCollection<FileProperties> Files { get; }
 
         /// <summary>
-        /// Путь к json-файлу каталога полученных файлов
+        /// Путь к json-файлу в котором хранится каталог полученных файлов
         /// </summary>
-        string catalogPath = $@"{Directory.GetCurrentDirectory()}\catalog.json";
+         private string catalogJsonPath = $@"{Directory.GetCurrentDirectory()}\catalog.json";
 
 
-        public FileCatalog()
+        public UpploadedFilesCatalog()
         {
-            if (File.Exists(catalogPath))
+            if (File.Exists(catalogJsonPath))
             {
 
                 string json;
 
                 try
                 {
-                    using (StreamReader fs = new StreamReader(catalogPath))
+                    using (StreamReader fs = new StreamReader(catalogJsonPath))
                         json = fs.ReadToEnd();
                     this.Files = JsonConvert.DeserializeObject<ObservableCollection<FileProperties>>(json);
                 }
@@ -41,7 +50,6 @@ namespace BotClient
 
             else
                 this.Files = new ObservableCollection<FileProperties>();
-
         }
 
        
@@ -55,7 +63,7 @@ namespace BotClient
 
             try
             {
-                using (StreamWriter fs = new StreamWriter(this.catalogPath, false))
+                using (StreamWriter fs = new StreamWriter(this.catalogJsonPath, false))
                     fs.Write(json);
 
             }
@@ -64,11 +72,9 @@ namespace BotClient
                 Debug.WriteLine("Невозможно сохранить журнал полученных файлов по указанному пути! " + ex.Message);
 
             }
-            
-
+ 
         }
 
-      
     }
 }
 

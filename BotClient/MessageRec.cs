@@ -3,6 +3,9 @@ using System.Text;
 
 namespace BotClient
 {
+    /// <summary>
+    /// Сообщение юзера или бота
+    /// </summary>
     struct MessageRec
     {
         public string Time { get; set; }
@@ -17,16 +20,7 @@ namespace BotClient
             this.FirstName = FirstName;
             this.Text = Text;
             this.Type = Type;
-
         }
-        public MessageRec(string Time, long Id, string FirstName, string Type)
-        {
-            this.Time = Time;
-            this.Id = Id;
-            this.FirstName = FirstName;
-            this.Type = Type;
-            this.Text = "";
-
-        }
+  
     }
 }

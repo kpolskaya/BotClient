@@ -4,6 +4,9 @@ using System.Text;
 
 namespace BotClient
 {
+    /// <summary>
+    /// Информация о присланном пользователем файле
+    /// </summary>
     struct FileProperties
     {
         public string FilePath { get; set; }

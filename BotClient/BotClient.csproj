@@ -67,11 +67,11 @@
     </ApplicationDefinition>
     <Compile Include="BotContact.cs" />
     <Compile Include="BotContactList.cs" />
-    <Compile Include="FileCatalog.cs" />
+    <Compile Include="UpploadedFilesCatalog.cs" />
     <Compile Include="MessageHistory.cs" />
     <Compile Include="MessageRec.cs" />
     <Compile Include="FileProperties.cs" />
-    <Compile Include="TgMesClient.cs" />
+    <Compile Include="TelegramMessageClient.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

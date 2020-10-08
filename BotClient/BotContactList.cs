@@ -7,9 +7,12 @@ using System.IO;
 
 namespace BotClient
 {
+    /// <summary>
+    /// Список контактов
+    /// </summary>
     class BotContactList 
     {
-        public ObservableCollection<BotContact> Contacts { get; } //сеттер можно убрать?
+        public ObservableCollection<BotContact> Contacts { get; } 
 
         /// <summary>
         /// Путь к файлу списка контактов
@@ -37,7 +40,6 @@ namespace BotClient
             }
             else 
                 this.Contacts = new ObservableCollection<BotContact>();
-
         }
         
         public void Add(BotContact contact)
@@ -67,8 +69,7 @@ namespace BotClient
 
                 Debug.WriteLine("Невозможно сохранить файл контактов по указанному пути! " + ex.Message);
             }
-           
-
+ 
         }
         public void Save()
         {
