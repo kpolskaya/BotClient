@@ -40,10 +40,9 @@ namespace BotClient
                 this.token = File.ReadAllText(@"token.txt");
                 
             }
-            catch (Exception ex)
+            catch 
             {
-                Debug.WriteLine("Токен не может быть прочитан " + ex.Message);
-                throw;
+                throw new Exception("Не удалось прочитать файл token.txt в папке программы. ");
             }   
 
             this.MessageLog = new MessageHistory();

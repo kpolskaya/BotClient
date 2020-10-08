@@ -34,7 +34,17 @@ namespace BotClient
         public MainWindow()
         {
             InitializeComponent();
-            client = new TelegramMessageClient(this);
+
+            try
+            {
+                client = new TelegramMessageClient(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + " Аварийное завершение.");
+                Environment.Exit(911);
+            }
+            
             listViewF.ItemsSource = client.Catalog.Files;
             Messages.ItemsSource = client.MessageLog.Messages;
             Contacts.ItemsSource = client.ContactList.Contacts;
